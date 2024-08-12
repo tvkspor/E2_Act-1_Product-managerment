@@ -38,7 +38,7 @@ module.exports.index = async (req, res) => {
   const products = await Product.find(find)
     .limit(objectPagination.limitItems)
     .skip(objectPagination.skip)
-    .sort({ position: "asc" });
+    .sort({ position: "desc" });
 
   res.render("admin/pages/products/index", {
     pageTitle: "Danh sach san pham",
@@ -133,7 +133,7 @@ module.exports.deleteItem = async (req, res) => {
   res.redirect("back");
 };
 
-// [GET] /admin/product
+// [GET] /admin/product/create
 module.exports.create = async (req, res) => {
   res.render("admin/pages/products/create", {
     pageTitle: "Tạo mới sản phẩm",
@@ -150,10 +150,6 @@ module.exports.createPost = async (req, res) => {
   } else {
     const countProduct = await Product.countDocuments();
     req.body.position = countProduct + 1;
-  }
-
-  if (req.file) {
-    req.body.thumbnail = `/uploads/${req.file.filename}`;
   }
 
   const record = new Product(req.body);
@@ -187,10 +183,6 @@ module.exports.editPatch = async (req, res) => {
   req.body.stock = parseInt(req.body.stock);
   req.body.position = parseInt(req.body.position);
 
-  if (req.file) {
-    req.body.thumbnail = `/uploads/${req.file.filename}`;
-  }
-
   await Product.updateOne(
     {
       _id: id,
@@ -211,10 +203,6 @@ module.exports.editPatch = async (req, res) => {
   req.body.discountPercentage = parseInt(req.body.discountPercentage);
   req.body.stock = parseInt(req.body.stock);
   req.body.position = parseInt(req.body.position);
-
-  if (req.file) {
-    req.body.thumbnail = `/uploads/${req.file.filename}`;
-  }
 
   await Product.updateOne(
     {
