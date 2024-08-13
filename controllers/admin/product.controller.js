@@ -7,11 +7,9 @@ const paginationHelper = require("../../helpers/pagination");
 // [GET] /admin/product
 module.exports.index = async (req, res) => {
   const filterStatus = filterStatusHelper(req.query);
-
   let find = {
     deleted: false,
   };
-
   if (req.query.status) {
     find.status = req.query.status;
   }
@@ -35,10 +33,19 @@ module.exports.index = async (req, res) => {
   );
   // End pagination
 
+  //Sort
+  let sort = {};
+  if (req.query.sortKey && req.query.sortValue) {
+    sort[req.query.sortKey] = req.query.sortValue;
+  } else {
+    sort.position = "desc";
+  }
+  //End sort
+
   const products = await Product.find(find)
     .limit(objectPagination.limitItems)
     .skip(objectPagination.skip)
-    .sort({ position: "desc" });
+    .sort(sort);
 
   res.render("admin/pages/products/index", {
     pageTitle: "Danh sach san pham",
@@ -175,25 +182,25 @@ module.exports.edit = async (req, res) => {
 };
 
 // [PATCH] /admin/products/edit/:id
-module.exports.editPatch = async (req, res) => {
-  const id = req.params.id;
+// module.exports.editPatch = async (req, res) => {
+//   const id = req.params.id;
 
-  req.body.price = parseInt(req.body.price);
-  req.body.discountPercentage = parseInt(req.body.discountPercentage);
-  req.body.stock = parseInt(req.body.stock);
-  req.body.position = parseInt(req.body.position);
+//   req.body.price = parseInt(req.body.price);
+//   req.body.discountPercentage = parseInt(req.body.discountPercentage);
+//   req.body.stock = parseInt(req.body.stock);
+//   req.body.position = parseInt(req.body.position);
 
-  await Product.updateOne(
-    {
-      _id: id,
-      deleted: false,
-    },
-    req.body
-  );
+//   await Product.updateOne(
+//     {
+//       _id: id,
+//       deleted: false,
+//     },
+//     req.body
+//   );
 
-  req.flash("success", "Cập nhật sản phẩm thành công!");
-  res.redirect(`back`);
-};
+//   req.flash("success", "Cập nhật sản phẩm thành công!");
+//   res.redirect(`back`);
+// };
 
 // [PATCH] /admin/products/edit/:id
 module.exports.editPatch = async (req, res) => {
